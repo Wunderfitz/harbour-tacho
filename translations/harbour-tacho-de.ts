@@ -48,9 +48,32 @@
     </message>
 </context>
 <context>
+    <name>Threat</name>
+    <message>
+        <source>%1 km/h</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>TitlePage</name>
     <message>
         <source>About Tacho</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Varia not connected :(</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>50 m</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>100 m</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>150 m</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

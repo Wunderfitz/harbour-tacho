@@ -8,6 +8,7 @@ SOURCES += src/harbour-tacho.cpp \
     src/variaconnectivity.cpp
 
 DISTFILES += qml/harbour-tacho.qml \
+    qml/components/Threat.qml \
     qml/cover/CoverPage.qml \
     qml/pages/AboutPage.qml \
     qml/pages/TitlePage.qml \
