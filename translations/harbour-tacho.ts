@@ -43,7 +43,11 @@
 <context>
     <name>CoverPage</name>
     <message>
-        <source>Tacho</source>
+        <source>Not connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Threats: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -74,6 +78,14 @@
     </message>
     <message>
         <source>150 m</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Varia Battery Level: %1%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>km/h</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

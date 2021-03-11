@@ -2,9 +2,10 @@ TARGET = harbour-tacho
 
 CONFIG += sailfishapp sailfishapp_i18n
 
-QT += core dbus xml
+QT += core dbus xml positioning
 
 SOURCES += src/harbour-tacho.cpp \
+    src/speedometer.cpp \
     src/variaconnectivity.cpp
 
 DISTFILES += qml/harbour-tacho.qml \
@@ -52,4 +53,5 @@ INSTALLS += 86.png 108.png 128.png 172.png 256.png \
             tacho.desktop gui images
 
 HEADERS += \
+    src/speedometer.h \
     src/variaconnectivity.h

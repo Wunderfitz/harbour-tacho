@@ -26,6 +26,7 @@ Page {
     allowedOrientations: Orientation.All
 
     property bool variaConnected;
+    property int variaBatteryLevel;
 
     Component.onCompleted: {
         variaConnectivity.initializeRadar();
@@ -34,11 +35,13 @@ Page {
     Connections {
         target: variaConnectivity
         onThreatsDetected: {
-            threatsListView.model = threats;
             threatRepeater.model = threats;
         }
         onConnectionStateChanged: {
             titlePage.variaConnected = connected;
+        }
+        onNewBatteryLevel: {
+            titlePage.variaBatteryLevel = batteryLevel;
         }
     }
 
@@ -52,176 +55,157 @@ Page {
             }
         }
 
-        contentHeight: tachoMainColumn.height
+        contentHeight: variaColumn.height
 
-        Column {
-            id: tachoMainColumn
-
+        Grid {
+            id: mainGrid
             width: titlePage.width
             height: titlePage.height
-            spacing: Theme.paddingLarge
+            rows: titlePage.isPortrait ? 2 : 1
+            columns: titlePage.isPortrait ? 1 : 2
 
-            PageHeader {
-                id: tachoHeader
-                title: "Tacho"
-            }
+            readonly property real columnWidth: width / columns
+            readonly property real rowHeight: height / rows
 
-            InfoLabel {
-                visible: !titlePage.variaConnected
-                text: qsTr("Varia not connected :(")
-            }
+            Column {
+                id: speedColumn
+                width: titlePage.isPortrait ? mainGrid.columnWidth : (speedLabel.height + kmhLabel.height)
+                height: titlePage.isPortrait ? implicitHeight : mainGrid.rowHeight
 
-            Item {
-                id: threatsOuterItem
-                width: parent.width
-                height: parent.height - tachoHeader.height - Theme.paddingLarge
-                visible: titlePage.variaConnected
+                Label {
+                    id: speedLabel
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "0"
+                    width: parent.columnWidth
+                    font.pixelSize: Theme.fontSizeHuge * 5
+                    font.bold: true
+                    color: Theme.primaryColor
+                }
+
+                Label {
+                    id: kmhLabel
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: qsTr("km/h")
+                    width: parent.columnWidth
+                    font.pixelSize: Theme.fontSizeLarge
+                    font.bold: true
+                    color: Theme.primaryColor
+                }
 
                 Item {
-                    id: threatsItem
+                    id: statusRow
                     width: parent.width - ( 2 * Theme.horizontalPageMargin )
-                    height: parent.height - ( 2 * Theme.paddingLarge )
-                    anchors.centerIn: parent
-
-                    Rectangle {
-                        id: distanceIndicatorRectangle
-                        width: Theme.horizontalPageMargin
-                        height: parent.height
-                        color: Theme.primaryColor
-                        radius: Theme.horizontalPageMargin / 3
-                    }
-
-                    Image {
-                        id: personImage
-                        source: "image://theme/icon-m-contact"
-                        width: Theme.itemSizeExtraSmall
-                        height: width
-                        anchors.top: distanceIndicatorRectangle.top
-                        anchors.left: distanceIndicatorRectangle.right
-                        anchors.leftMargin: Theme.paddingMedium
-                    }
+                    height: titlePage.isPortrait ? Theme.itemSizeSmall : ( speedColumn.height - speedLabel.height - kmhLabel.height )
+                    anchors.horizontalCenter: parent.horizontalCenter
 
                     Label {
-                        text: qsTr("50 m")
-                        anchors.left: distanceIndicatorRectangle.right
-                        anchors.leftMargin: Theme.paddingMedium
-                        y: ( distanceIndicatorRectangle.height / 3 ) - height
-                        font.pixelSize: Theme.fontSizeSmall
+                        text: qsTr("Varia Battery Level: %1\%").arg(titlePage.variaBatteryLevel)
+                        width: parent.width
+                        font.pixelSize: Theme.fontSizeExtraSmall
                         color: Theme.primaryColor
+                        visible: titlePage.variaConnected
+                        horizontalAlignment: Text.AlignHCenter
+                        anchors.bottom: parent.bottom
+                        anchors.bottomMargin: Theme.paddingMedium
                     }
+                }
+            }
 
-                    Label {
-                        text: qsTr("100 m")
-                        anchors.left: distanceIndicatorRectangle.right
-                        anchors.leftMargin: Theme.paddingMedium
-                        y: ( distanceIndicatorRectangle.height / 3 * 2 ) - height
-                        font.pixelSize: Theme.fontSizeSmall
-                        color: Theme.primaryColor
-                    }
+            Column {
+                id: variaColumn
 
-                    Label {
-                        id: maxMeterLabel
-                        text: qsTr("150 m")
-                        anchors.left: distanceIndicatorRectangle.right
-                        anchors.leftMargin: Theme.paddingMedium
-                        anchors.bottom: distanceIndicatorRectangle.bottom
-                        font.pixelSize: Theme.fontSizeSmall
-                        color: Theme.primaryColor
-                    }
+                width: titlePage.isPortrait ? mainGrid.columnWidth : (parent.width - speedColumn.width)
+                height: titlePage.isPortrait ? (parent.height - speedColumn.height) : mainGrid.rowHeight
+                spacing: Theme.paddingSmall
 
-                    Repeater {
-                        id: threatRepeater
-                        anchors.left: maxMeterLabel.right
-                        anchors.leftMargin: Theme.paddingMedium
-                        anchors.right: parent.right
-                        height: parent.height
-                        delegate: Threat {
-                            width: threatRepeater.width
-                            threatData: modelData
+                InfoLabel {
+                    width: parent.width
+                    height: parent.height
+                    verticalAlignment: Text.AlignVCenter
+                    visible: !titlePage.variaConnected
+                    text: qsTr("Varia not connected :(")
+                }
+
+                Item {
+                    id: threatsOuterItem
+                    width: parent.width
+                    height: parent.height
+                    visible: titlePage.variaConnected
+
+                    Item {
+                        id: threatsItem
+                        width: parent.width - ( 2 * Theme.horizontalPageMargin )
+                        height: parent.height - ( 2 * Theme.paddingLarge )
+                        anchors.centerIn: parent
+
+                        Rectangle {
+                            id: distanceIndicatorRectangle
+                            width: Theme.horizontalPageMargin
+                            height: parent.height
+                            color: Theme.primaryColor
+                            radius: Theme.horizontalPageMargin / 3
+                        }
+
+                        Image {
+                            id: personImage
+                            source: "image://theme/icon-m-contact"
+                            width: Theme.itemSizeExtraSmall
+                            height: width
+                            anchors.top: distanceIndicatorRectangle.top
+                            anchors.left: distanceIndicatorRectangle.right
+                            anchors.leftMargin: Theme.paddingMedium
+                        }
+
+                        Label {
+                            text: qsTr("50 m")
+                            anchors.left: distanceIndicatorRectangle.right
+                            anchors.leftMargin: Theme.paddingMedium
+                            y: ( distanceIndicatorRectangle.height / 3 ) - height
+                            font.pixelSize: Theme.fontSizeSmall
+                            color: Theme.primaryColor
+                        }
+
+                        Label {
+                            text: qsTr("100 m")
+                            anchors.left: distanceIndicatorRectangle.right
+                            anchors.leftMargin: Theme.paddingMedium
+                            y: ( distanceIndicatorRectangle.height / 3 * 2 ) - height
+                            font.pixelSize: Theme.fontSizeSmall
+                            color: Theme.primaryColor
+                        }
+
+                        Label {
+                            id: maxMeterLabel
+                            text: qsTr("150 m")
+                            anchors.left: distanceIndicatorRectangle.right
+                            anchors.leftMargin: Theme.paddingMedium
+                            anchors.bottom: distanceIndicatorRectangle.bottom
+                            font.pixelSize: Theme.fontSizeSmall
+                            color: Theme.primaryColor
+                        }
+
+                        Repeater {
+                            id: threatRepeater
                             anchors.left: maxMeterLabel.right
                             anchors.leftMargin: Theme.paddingMedium
-                            y: threatRepeater.height / 150 * modelData.distance
-                        }
+                            anchors.right: parent.right
+                            height: parent.height
+                            delegate: Threat {
+                                width: threatRepeater.width
+                                threatData: modelData
+                                anchors.left: maxMeterLabel.right
+                                anchors.leftMargin: Theme.paddingMedium
+                                y: threatRepeater.height / 150 * modelData.distance
+                            }
 
+                        }
                     }
                 }
 
             }
 
-            SilicaListView {
-                id: threatsListView
-                width: parent.width
-                height: parent.height - tachoHeader.height - Theme.paddingLarge
-                visible: false // titlePage.variaConnected
-
-                clip: true
-
-                delegate: ListItem {
-                    id: activeSessionListItem
-                    width: parent.width
-                    contentHeight: threatsColumn.height + ( 2 * Theme.paddingMedium )
-
-                    Column {
-                        id: threatsColumn
-                        width: parent.width - ( 2 * Theme.horizontalPageMargin )
-                        spacing: Theme.paddingSmall
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
-
-                        Label {
-                            width: parent.width
-                            text: "Threat ID: " + modelData.number
-                            font.pixelSize: Theme.fontSizeSmall
-                            color: Theme.secondaryColor
-                            maximumLineCount: 1
-                            elide: Text.ElideRight
-                            anchors {
-                                horizontalCenter: parent.horizontalCenter
-                            }
-                        }
-
-                        Label {
-                            width: parent.width
-                            text: modelData.distance + " m"
-                            font.pixelSize: Theme.fontSizeLarge
-                            font.bold: true
-                            color: Theme.primaryColor
-                            maximumLineCount: 1
-                            truncationMode: TruncationMode.Fade
-                            anchors {
-                                horizontalCenter: parent.horizontalCenter
-                            }
-                        }
-
-                        Label {
-                            width: parent.width
-                            text: modelData.speed + " km/h"
-                            font.pixelSize: Theme.fontSizeLarge
-                            font.bold: true
-                            color: Theme.primaryColor
-                            maximumLineCount: 1
-                            truncationMode: TruncationMode.Fade
-                            anchors {
-                                horizontalCenter: parent.horizontalCenter
-                            }
-                        }
-                    }
-
-                    Separator {
-                        id: separator
-                        anchors {
-                            bottom: parent.bottom
-                        }
-
-                        width: parent.width
-                        color: Theme.primaryColor
-                        horizontalAlignment: Qt.AlignHCenter
-                    }
-
-                }
-
-                VerticalScrollDecorator {}
-            }
         }
+
+
     }
 }

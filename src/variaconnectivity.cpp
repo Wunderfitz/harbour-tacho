@@ -1,5 +1,22 @@
-#include "variaconnectivity.h"
+/*
+    Copyright (C) 2021 Sebastian J. Wolf
 
+    This file is part of Tacho.
+
+    Tacho is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Tacho is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Tacho. If not, see <http://www.gnu.org/licenses/>.
+*/
+#include "variaconnectivity.h"
 
 #include <QDebug>
 #include <QBitArray>
@@ -85,7 +102,7 @@ void VariaConnectivity::onDevicePropertiesChanged(const QString &interface, cons
             this->servicesResolved = newServicesResolvedState;
             emit servicesResolvedStateChanged(this->servicesResolved);
             if (this->servicesResolved) {
-                this->initializeThreatListener();
+                this->initializeValueListeners();
             }
         }
     }
@@ -124,6 +141,17 @@ void VariaConnectivity::onCharacteristicPropertiesChanged(const QString &interfa
         emit threatsDetected(currentThreats);
     }
 
+}
+
+void VariaConnectivity::onBatteryLevelChanged(const QString &interface, const QVariantMap &map, const QStringList &list)
+{
+    Q_UNUSED(interface);
+    Q_UNUSED(list);
+
+    if (map.contains("Percentage")) {
+        this->batteryLevel = map.value("Percentage").toInt();
+        emit newBatteryLevel(this->batteryLevel);
+    }
 }
 
 void VariaConnectivity::timeoutDeviceDiscoveryTimer()
@@ -185,7 +213,7 @@ void VariaConnectivity::detectNodeName()
                     this->deviceConnectionTimer->start(2000);
                 }
                 if (this->servicesResolved) {
-                    this->initializeThreatListener();
+                    this->initializeValueListeners();
                 }
                 break;
             }
@@ -199,8 +227,17 @@ void VariaConnectivity::connectToDevice()
     this->deviceInterface->asyncCall("Connect");
 }
 
-void VariaConnectivity::initializeThreatListener()
+void VariaConnectivity::initializeValueListeners()
 {
+    qDebug() << "Initializing battery listener...";
+    this->batteryInterface = new QDBusInterface("org.bluez", "/org/bluez/hci0/" + this->variaNodeName, "org.bluez.Battery1", QDBusConnection::systemBus(), this);
+    this->batteryLevel = this->batteryInterface->property("Percentage").toInt();
+    qDebug() << "Device battery level:" << this->batteryLevel;
+    emit newBatteryLevel(this->batteryLevel);
+    QStringList batteryArgumentMatch;
+    batteryArgumentMatch << "org.bluez.Battery1";
+    QDBusConnection::systemBus().connect("org.bluez", "/org/bluez/hci0/" + this->variaNodeName, "org.freedesktop.DBus.Properties", "PropertiesChanged", batteryArgumentMatch, QString(), this, SLOT(onBatteryLevelChanged(QString, QVariantMap, QStringList)));
+
     qDebug() << "Initializing threat listener...";
     this->characteristicInterface = new QDBusInterface("org.bluez", "/org/bluez/hci0/" + this->variaNodeName + "/service001d/char001e", "org.bluez.GattCharacteristic1", QDBusConnection::systemBus(), this);
     this->characteristicInterface->call("StartNotify");

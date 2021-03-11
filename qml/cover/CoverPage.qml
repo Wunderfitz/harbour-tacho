@@ -21,6 +21,19 @@ import Sailfish.Silica 1.0
 
 CoverBackground {
 
+    property int threatCount: 0
+    property bool variaConnected: false
+
+    Connections {
+        target: variaConnectivity
+        onThreatsDetected: {
+            threatCount = threats.length;
+        }
+        onConnectionStateChanged: {
+            variaConnected = connected;
+        }
+    }
+
     Image {
         id: imageLoadingBackgroundImage
         asynchronous: true
@@ -48,6 +61,10 @@ CoverBackground {
     Label {
         id: label
         anchors.centerIn: parent
-        text: qsTr("Tacho")
+        font.pixelSize: Theme.fontSizeLarge
+        width: parent.width - ( 2 * Theme.paddingMedium )
+        horizontalAlignment: Text.AlignHCenter
+        text: variaConnected ? qsTr("Threats: %1").arg(threatCount) : qsTr("Not connected")
+        wrapMode: Text.Wrap
     }
 }

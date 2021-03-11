@@ -26,6 +26,7 @@
 #include <QQmlContext>
 
 #include "variaconnectivity.h"
+#include "speedometer.h"
 
 int main(int argc, char *argv[])
 {
@@ -36,6 +37,9 @@ int main(int argc, char *argv[])
 
     VariaConnectivity variaConnectivity(view.data());
     context->setContextProperty("variaConnectivity", &variaConnectivity);
+
+    Speedometer speedometer(view.data());
+    context->setContextProperty("speedometer", &speedometer);
 
     view->setSource(SailfishApp::pathTo("qml/harbour-tacho.qml"));
     view->show();
