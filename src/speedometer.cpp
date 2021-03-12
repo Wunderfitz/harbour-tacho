@@ -49,8 +49,8 @@ void Speedometer::handleGeoPositionUpdated(const QGeoPositionInfo &info)
     qDebug() << "Ground Speed:" << groundSpeed;
     qreal horizontalAccuracy = info.attribute(QGeoPositionInfo::HorizontalAccuracy);
     qDebug() << "Horizontal Accuracy:" << horizontalAccuracy;
-    if (horizontalAccuracy < 100 && groundSpeed > 5) {
-        emit newSpeed(groundSpeed);
+    if (horizontalAccuracy < 100 && groundSpeed > 0) {
+        emit newSpeed(groundSpeed * 3.6);
     } else {
         emit newSpeed(0);
     }

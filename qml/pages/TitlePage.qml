@@ -45,6 +45,13 @@ Page {
         }
     }
 
+    Connections {
+        target: speedometer
+        onNewSpeed: {
+            speedLabel.text = Math.round(speed);
+        }
+    }
+
     SilicaFlickable {
         anchors.fill: parent
 

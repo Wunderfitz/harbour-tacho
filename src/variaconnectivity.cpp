@@ -117,7 +117,6 @@ void VariaConnectivity::onCharacteristicPropertiesChanged(const QString &interfa
     if (map.contains("Value")) {
         QVariantList currentThreats;
         QByteArray radarData = map["Value"].toByteArray();
-        qDebug() << "-----------------------------------------------------------------------------";
         int foundThreats = ( radarData.length() - 1 ) / 3;
         qDebug() << "Threats found:" << foundThreats;
         quint8 idByte = radarData.at(0);
@@ -135,7 +134,6 @@ void VariaConnectivity::onCharacteristicPropertiesChanged(const QString &interfa
             currentThreat.insert("speed", threatSpeed);
             currentThreats.append(currentThreat);
         }
-        qDebug() << "-----------------------------------------------------------------------------";
         this->previousIdByte = idByte;
         this->previousThreats = currentThreats;
         emit threatsDetected(currentThreats);
