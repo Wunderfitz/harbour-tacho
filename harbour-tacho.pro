@@ -2,7 +2,7 @@ TARGET = harbour-tacho
 
 CONFIG += sailfishapp sailfishapp_i18n
 
-QT += core dbus xml positioning
+QT += core dbus xml positioning multimedia
 
 SOURCES += src/harbour-tacho.cpp \
     src/speedometer.cpp \

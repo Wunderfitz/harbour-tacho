@@ -24,19 +24,20 @@ Row {
     spacing: Theme.paddingMedium
 
     property var threatData
+    property bool dangerous: threatData.speed > 70
 
     Rectangle {
         id: lineLeft
         height: Theme.paddingSmall
         width: ( parent.width - carImage.width - speedLabel.width - ( 3 * Theme.paddingMedium ) ) / 2
-        color: Theme.primaryColor
+        color: dangerous ? Theme.highlightColor : Theme.primaryColor
         radius: height / 3
         anchors.verticalCenter: parent.verticalCenter
     }
 
     Image {
         id: carImage
-        source: "image://theme/icon-m-car"
+        source: dangerous ? "image://theme/icon-m-car?" + Theme.highlightColor : "image://theme/icon-m-car?" + Theme.primaryColor
         width: Theme.itemSizeExtraSmall
         height: width
         anchors.verticalCenter: parent.verticalCenter
@@ -47,7 +48,7 @@ Row {
         text: qsTr("%1 km/h").arg(threatData.speed)
         font.pixelSize: Theme.fontSizeLarge
         font.bold: true
-        color: Theme.primaryColor
+        color: dangerous ? Theme.highlightColor : Theme.primaryColor
         anchors.verticalCenter: parent.verticalCenter
     }
 
@@ -55,7 +56,7 @@ Row {
         id: lineRight
         height: Theme.paddingSmall
         width: ( parent.width - carImage.width - speedLabel.width - ( 3 * Theme.paddingMedium ) ) / 2
-        color: Theme.primaryColor
+        color: dangerous ? Theme.highlightColor : Theme.primaryColor
         radius: height / 3
         anchors.verticalCenter: parent.verticalCenter
     }

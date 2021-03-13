@@ -24,6 +24,7 @@
 #include <QVariantList>
 #include <QTimer>
 #include <QDBusInterface>
+#include <QMediaPlayer>
 
 class VariaConnectivity : public QObject
 {
@@ -58,19 +59,23 @@ private:
     quint8 previousIdByte;
     int batteryLevel;
     QVariantList previousThreats;
+    QVariantList sentAlerts;
 
     QTimer *deviceDiscoveryTimer;
     QTimer *deviceConnectionTimer;
     QTimer *screensaverTimer;
+    QTimer *alertsCleanupTimer;
     QDBusInterface *adapterInterface;
     QDBusInterface *deviceInterface;
     QDBusInterface *batteryInterface;
     QDBusInterface *characteristicInterface;
     QDBusInterface *mceInterface;
+    QMediaPlayer *mediaPlayer;
 
     void timeoutDeviceDiscoveryTimer();
     void timeoutDeviceConnectionTimer();
     void timeoutScreensaverTimer();
+    void timeoutAlertsCleanupTimer();
     void detectNodeName();
     void connectToDevice();
     void initializeValueListeners();

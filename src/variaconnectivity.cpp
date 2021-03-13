@@ -46,6 +46,15 @@ VariaConnectivity::VariaConnectivity(QObject *parent) : QObject(parent)
     this->screensaverTimer->setSingleShot(false);
     this->screensaverTimer->start(15000);
     connect(screensaverTimer, &QTimer::timeout, this, &VariaConnectivity::timeoutScreensaverTimer);
+
+    this->alertsCleanupTimer = new QTimer(this);
+    this->alertsCleanupTimer->setSingleShot(false);
+    this->alertsCleanupTimer->start(600000);
+    connect(alertsCleanupTimer, &QTimer::timeout, this, &VariaConnectivity::timeoutAlertsCleanupTimer);
+
+    this->mediaPlayer = new QMediaPlayer();
+    this->mediaPlayer->setMedia(QUrl::fromLocalFile("/usr/share/sounds/jolla-ringtones/stereo/poppy-red-tone-1.ogg"));
+    this->mediaPlayer->setVolume(50);
 }
 
 VariaConnectivity::~VariaConnectivity()
@@ -133,6 +142,11 @@ void VariaConnectivity::onCharacteristicPropertiesChanged(const QString &interfa
             currentThreat.insert("distance", threatDistance);
             currentThreat.insert("speed", threatSpeed);
             currentThreats.append(currentThreat);
+            if (threatSpeed > 70 && !this->sentAlerts.contains(threatNumber)) {
+                qDebug() << "Uh, fast! Sending alert...";
+                this->sentAlerts.append(threatNumber);
+                this->mediaPlayer->play();
+            }
         }
         this->previousIdByte = idByte;
         this->previousThreats = currentThreats;
@@ -172,6 +186,11 @@ void VariaConnectivity::timeoutDeviceConnectionTimer()
 void VariaConnectivity::timeoutScreensaverTimer()
 {
     this->disableScreensaver();
+}
+
+void VariaConnectivity::timeoutAlertsCleanupTimer()
+{
+    this->sentAlerts.clear();
 }
 
 void VariaConnectivity::detectNodeName()
