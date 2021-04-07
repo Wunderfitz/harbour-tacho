@@ -33,52 +33,67 @@ public:
     explicit VariaConnectivity(QObject *parent = nullptr);
     ~VariaConnectivity();
 
-    Q_INVOKABLE void initializeRadar();
+    Q_INVOKABLE void initializeDevices();
     Q_INVOKABLE void disableScreensaver();
     Q_INVOKABLE void enableScreensaver();
 
 signals:
-    void deviceDetected();
-    void connectionStateChanged(bool connected);
-    void servicesResolvedStateChanged(bool servicesResolved);
+    void variaDeviceDetected();
+    void cycliqDeviceDetected();
+    void variaConnectionStateChanged(bool connected);
+    void variaServicesResolvedStateChanged(bool variaServicesResolved);
+    void cycliqConnectionStateChanged(bool connected);
+    void cycliqServicesResolvedStateChanged(bool cycliqServicesResolved);
     void threatsDetected(const QVariantList &threats);
-    void newBatteryLevel(int batteryLevel);
+    void variaNewBatteryLevel(int batteryLevel);
 
 public slots:
 
 private slots:
-    void onDevicePropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
-    void onCharacteristicPropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
+    void onVariaDevicePropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
+    void onVariaCharacteristicPropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
     void onBatteryLevelChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
+    void onCycliqDevicePropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
+    void onCycliqCharacteristicPropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list);
 
 private:
 
     QString variaNodeName;
-    bool deviceConnected;
-    bool servicesResolved;
+    bool variaDeviceConnected;
+    bool variaServicesResolved;
+    QString cycliqNodeName;
+    bool cycliqDeviceConnected;
+    bool cycliqServicesResolved;
     quint8 previousIdByte;
     int batteryLevel;
     QVariantList previousThreats;
     QVariantList sentAlerts;
 
-    QTimer *deviceDiscoveryTimer;
-    QTimer *deviceConnectionTimer;
+    QTimer *variaDeviceDiscoveryTimer;
+    QTimer *variaDeviceConnectionTimer;
+    QTimer *cycliqDeviceDiscoveryTimer;
+    QTimer *cycliqDeviceConnectionTimer;
     QTimer *screensaverTimer;
     QTimer *alertsCleanupTimer;
     QDBusInterface *adapterInterface;
-    QDBusInterface *deviceInterface;
-    QDBusInterface *batteryInterface;
-    QDBusInterface *characteristicInterface;
+    QDBusInterface *variaDeviceInterface;
+    QDBusInterface *cycliqDeviceInterface;
+    QDBusInterface *variaBatteryInterface;
+    QDBusInterface *variaCharacteristicInterface;
     QDBusInterface *mceInterface;
     QMediaPlayer *mediaPlayer;
 
-    void timeoutDeviceDiscoveryTimer();
-    void timeoutDeviceConnectionTimer();
+    void timeoutVariaDeviceDiscoveryTimer();
+    void timeoutVariaDeviceConnectionTimer();
+    void timeoutCycliqDeviceDiscoveryTimer();
+    void timeoutCycliqDeviceConnectionTimer();
     void timeoutScreensaverTimer();
     void timeoutAlertsCleanupTimer();
     void detectNodeName();
-    void connectToDevice();
-    void initializeValueListeners();
+    void connectToVariaDevice();
+    void connectToCycliqDevice();
+    void initializeVariaValueListeners();
+    void initializeCycliqValueListeners();
 };
 
 #endif // VARIACONNECTIVITY_H

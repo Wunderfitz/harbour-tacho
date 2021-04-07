@@ -29,7 +29,7 @@ CoverBackground {
         onThreatsDetected: {
             threatCount = threats.length;
         }
-        onConnectionStateChanged: {
+        onVariaConnectionStateChanged: {
             variaConnected = connected;
         }
     }

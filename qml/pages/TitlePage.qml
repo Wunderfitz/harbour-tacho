@@ -29,7 +29,7 @@ Page {
     property int variaBatteryLevel;
 
     Component.onCompleted: {
-        variaConnectivity.initializeRadar();
+        variaConnectivity.initializeDevices();
     }
 
     Connections {
@@ -37,10 +37,10 @@ Page {
         onThreatsDetected: {
             threatRepeater.model = threats;
         }
-        onConnectionStateChanged: {
+        onVariaConnectionStateChanged: {
             titlePage.variaConnected = connected;
         }
-        onNewBatteryLevel: {
+        onVariaNewBatteryLevel: {
             titlePage.variaBatteryLevel = batteryLevel;
         }
     }
