@@ -27,6 +27,7 @@
 
 #include "variaconnectivity.h"
 #include "speedometer.h"
+#include "csvexporter.h"
 
 int main(int argc, char *argv[])
 {
@@ -35,11 +36,14 @@ int main(int argc, char *argv[])
 
     QQmlContext *context = view.data()->rootContext();
 
-    VariaConnectivity variaConnectivity(view.data());
-    context->setContextProperty("variaConnectivity", &variaConnectivity);
+    VariaConnectivity *variaConnectivity = new VariaConnectivity(view.data());
+    context->setContextProperty("variaConnectivity", variaConnectivity);
 
-    Speedometer speedometer(view.data());
-    context->setContextProperty("speedometer", &speedometer);
+    Speedometer *speedometer = new Speedometer(view.data());
+    context->setContextProperty("speedometer", speedometer);
+
+    CSVExporter csvExporter(speedometer, variaConnectivity, view.data());
+    context->setContextProperty("csvExporter", &csvExporter);
 
     view->setSource(SailfishApp::pathTo("qml/harbour-tacho.qml"));
     view->show();

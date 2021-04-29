@@ -76,7 +76,7 @@ Page {
 
             Column {
                 id: speedColumn
-                width: titlePage.isPortrait ? mainGrid.columnWidth : (speedLabel.height + kmhLabel.height)
+                width: titlePage.isPortrait ? mainGrid.columnWidth : (speedLabel.height + kmhLabel.height + recordingSwitch.height)
                 height: titlePage.isPortrait ? implicitHeight : mainGrid.rowHeight
 
                 Label {
@@ -84,7 +84,7 @@ Page {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "0"
                     width: parent.columnWidth
-                    font.pixelSize: Theme.fontSizeHuge * 5
+                    font.pixelSize: Theme.fontSizeHuge * 4
                     font.bold: true
                     color: Theme.primaryColor
                 }
@@ -99,10 +99,24 @@ Page {
                     color: Theme.primaryColor
                 }
 
+                TextSwitch {
+                    id: recordingSwitch
+                    width: parent.width
+                    text: qsTr("Record to CSV")
+                    description: qsTr("Stored in Documents folder")
+                    onCheckedChanged: {
+                        if (checked) {
+                            csvExporter.startRecording();
+                        } else {
+                            csvExporter.stopRecording();
+                        }
+                    }
+                }
+
                 Item {
                     id: statusRow
                     width: parent.width - ( 2 * Theme.horizontalPageMargin )
-                    height: titlePage.isPortrait ? Theme.itemSizeSmall : ( speedColumn.height - speedLabel.height - kmhLabel.height )
+                    height: titlePage.isPortrait ? Theme.itemSizeSmall : ( speedColumn.height - speedLabel.height - kmhLabel.height - recordingSwitch.height )
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     Label {

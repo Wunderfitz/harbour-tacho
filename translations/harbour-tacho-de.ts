@@ -88,5 +88,13 @@
         <source>km/h</source>
         <translation>km/h</translation>
     </message>
+    <message>
+        <source>Record to CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stored in Documents folder</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

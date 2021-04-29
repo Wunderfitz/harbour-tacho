@@ -5,6 +5,7 @@ CONFIG += sailfishapp sailfishapp_i18n
 QT += core dbus xml positioning multimedia
 
 SOURCES += src/harbour-tacho.cpp \
+    src/csvexporter.cpp \
     src/speedometer.cpp \
     src/variaconnectivity.cpp
 
@@ -53,5 +54,6 @@ INSTALLS += 86.png 108.png 128.png 172.png 256.png \
             tacho.desktop gui images
 
 HEADERS += \
+    src/csvexporter.h \
     src/speedometer.h \
     src/variaconnectivity.h

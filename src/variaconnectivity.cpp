@@ -208,7 +208,7 @@ void VariaConnectivity::detectNodeName()
         if (nodeName.startsWith("dev_")) {
             QDBusInterface potentialDeviceInterface("org.bluez", "/org/bluez/hci0/" + nodeName, "org.bluez.Device1", QDBusConnection::systemBus(), this);
             QString deviceName = potentialDeviceInterface.property("Name").toString();
-            if (deviceName == "RTL64894") {
+            if (deviceName.startsWith("RTL")) {
                 qDebug() << "Varia device found:" << nodeName;
                 emit deviceDetected();
                 this->variaNodeName = nodeName;
