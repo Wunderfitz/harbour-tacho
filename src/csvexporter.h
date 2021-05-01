@@ -47,10 +47,12 @@ private:
     Speedometer *speedometer;
     VariaConnectivity *variaConnectivity;
     QList<quint8> lastThreats;
-    QMap<quint8, QVariantMap> threats;
+    QMap<quint8, QVariantMap> recordedThreats;
     qreal currentSpeed;
     QFile *csvFile;
     QMutex threatMutex;
+    bool recording = false;
+    bool removalNextRound = false;
 };
 
 #endif // CSVEXPORTER_H

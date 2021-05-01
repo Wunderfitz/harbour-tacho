@@ -89,11 +89,11 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Record to CSV</source>
+        <source>Export to CSV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Stored in Documents folder</source>
+        <source>Stored in your Documents folder (prefix: &apos;tacho&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -45,12 +45,14 @@ void CSVExporter::startRecording()
             fileOut.setCodec("UTF-8");
             fileOut << QString("Threat ID;First Seen;Last Seen;Last Vehicle Speed;Last Vehicle Distance;My Speed;").toUtf8() << "\n";
             fileOut.flush();
+            this->recording = true;
         }
 }
 
 void CSVExporter::stopRecording()
 {
     qDebug() << "CSV Exporter - Stop recording";
+    this->recording = false;
     this->csvFile->close();
     this->csvFile->deleteLater();
 }
@@ -63,6 +65,9 @@ void CSVExporter::handleNewSpeed(qreal speed)
 
 void CSVExporter::handleThreats(const QVariantList &threats)
 {
+    if (!this->recording) {
+        return;
+    }
     this->threatMutex.lock();
     QList<quint8> currentThreats;
     QString currently = QDateTime::currentDateTime().toString(Qt::ISODate);
@@ -70,8 +75,8 @@ void CSVExporter::handleThreats(const QVariantList &threats)
         QVariantMap threat = rawThreat.toMap();
         quint8 threatNumber = threat.value("number").toInt();
         QVariantMap recordedThreat;
-        if (this->threats.contains(threatNumber)) {
-            recordedThreat = this->threats.value(threatNumber);
+        if (this->recordedThreats.contains(threatNumber)) {
+            recordedThreat = this->recordedThreats.value(threatNumber);
         } else {
             recordedThreat.insert("firstSeen", currently);
         }
@@ -79,25 +84,34 @@ void CSVExporter::handleThreats(const QVariantList &threats)
         recordedThreat.insert("vehicleSpeed", threat.value("speed").toInt());
         recordedThreat.insert("vehicleDistance", threat.value("distance").toInt());
         recordedThreat.insert("mySpeed", this->currentSpeed);
-        this->threats.insert(threatNumber, recordedThreat);
+        this->recordedThreats.insert(threatNumber, recordedThreat);
         currentThreats.append(threatNumber);
     }
-    for (quint8 lastThreat : this->lastThreats) {
-        if (!currentThreats.contains(lastThreat)) {
-            QVariantMap goneThreat = this->threats.value(lastThreat);
-            QTextStream fileOut(this->csvFile);
-            fileOut.setCodec("UTF-8");
-            fileOut << QString::number(lastThreat) << ";";
-            fileOut << goneThreat.value("firstSeen").toString() << ";";
-            fileOut << goneThreat.value("lastSeen").toString() << ";";
-            fileOut << goneThreat.value("vehicleSpeed").toString() << ";";
-            fileOut << goneThreat.value("vehicleDistance").toString() << ";";
-            fileOut << goneThreat.value("mySpeed").toString() << ";";
-            fileOut << "\n";
-            fileOut.flush();
-            this->threats.remove(lastThreat);
+    if (this->removalNextRound) {
+        qDebug() << "Current Threats:" << currentThreats;
+        qDebug() << "Last Threats:   " << this->lastThreats;
+        for (quint8 lastThreat : this->lastThreats) {
+            if (!currentThreats.contains(lastThreat)) {
+                qDebug() << "Threat" << lastThreat << "is gone, exporting information...";
+                QVariantMap goneThreat = this->recordedThreats.value(lastThreat);
+                QTextStream fileOut(this->csvFile);
+                fileOut.setCodec("UTF-8");
+                fileOut << QString::number(lastThreat) << ";";
+                fileOut << goneThreat.value("firstSeen").toString() << ";";
+                fileOut << goneThreat.value("lastSeen").toString() << ";";
+                fileOut << goneThreat.value("vehicleSpeed").toString() << ";";
+                fileOut << goneThreat.value("vehicleDistance").toString() << ";";
+                fileOut << goneThreat.value("mySpeed").toString() << ";";
+                fileOut << "\n";
+                fileOut.flush();
+                this->recordedThreats.remove(lastThreat);
+            }
         }
+        this->lastThreats.clear();
+        this->lastThreats.append(currentThreats);
+        this->removalNextRound = false;
+    } else {
+        this->removalNextRound = true;
     }
-    this->lastThreats = currentThreats;
     this->threatMutex.unlock();
 }

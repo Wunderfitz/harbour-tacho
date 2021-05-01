@@ -84,7 +84,7 @@ Page {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "0"
                     width: parent.columnWidth
-                    font.pixelSize: Theme.fontSizeHuge * 4
+                    font.pixelSize: Theme.fontSizeHuge * 5
                     font.bold: true
                     color: Theme.primaryColor
                 }
@@ -102,8 +102,8 @@ Page {
                 TextSwitch {
                     id: recordingSwitch
                     width: parent.width
-                    text: qsTr("Record to CSV")
-                    description: qsTr("Stored in Documents folder")
+                    text: qsTr("Export to CSV")
+                    description: qsTr("Stored in your Documents folder (prefix: 'tacho')")
                     onCheckedChanged: {
                         if (checked) {
                             csvExporter.startRecording();

@@ -89,12 +89,12 @@
         <translation>km/h</translation>
     </message>
     <message>
-        <source>Record to CSV</source>
-        <translation type="unfinished"></translation>
+        <source>Export to CSV</source>
+        <translation>Nach CSV exportieren</translation>
     </message>
     <message>
-        <source>Stored in Documents folder</source>
-        <translation type="unfinished"></translation>
+        <source>Stored in your Documents folder (prefix: &apos;tacho&apos;)</source>
+        <translation>Gespeichert in Ihrem Documents-Verzeichnis (Präfix: &apos;tacho&apos;)</translation>
     </message>
 </context>
 </TS>
