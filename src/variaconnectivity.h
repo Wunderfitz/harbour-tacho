@@ -36,6 +36,10 @@ public:
     Q_INVOKABLE void initializeRadar();
     Q_INVOKABLE void disableScreensaver();
     Q_INVOKABLE void enableScreensaver();
+    Q_INVOKABLE void enableBlitzer();
+    Q_INVOKABLE void disableBlitzer();
+    Q_INVOKABLE void setBlitzerThreshold(int blitzerThreshold);
+    Q_INVOKABLE void fireBlitzer();
 
 signals:
     void deviceDetected();
@@ -55,6 +59,8 @@ private:
 
     QString variaNodeName;
     bool deviceConnected;
+    int blitzerThreshold;
+    bool blitzerEnabled;
     bool servicesResolved;
     quint8 previousIdByte;
     int batteryLevel;

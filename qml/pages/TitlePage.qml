@@ -76,7 +76,8 @@ Page {
 
             Column {
                 id: speedColumn
-                width: titlePage.isPortrait ? mainGrid.columnWidth : (speedLabel.height + kmhLabel.height + recordingSwitch.height)
+                spacing: Theme.paddingMedium
+                width: titlePage.isPortrait ? mainGrid.columnWidth : (speedLabel.height + kmhLabel.height + recordingSwitch.height + blitzerRow.height + blitzButton.height)
                 height: titlePage.isPortrait ? implicitHeight : mainGrid.rowHeight
 
                 Label {
@@ -84,7 +85,7 @@ Page {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: "0"
                     width: parent.columnWidth
-                    font.pixelSize: Theme.fontSizeHuge * 5
+                    font.pixelSize: Theme.fontSizeHuge * 2
                     font.bold: true
                     color: Theme.primaryColor
                 }
@@ -94,7 +95,7 @@ Page {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: qsTr("km/h")
                     width: parent.columnWidth
-                    font.pixelSize: Theme.fontSizeLarge
+                    font.pixelSize: Theme.fontSizeMedium
                     font.bold: true
                     color: Theme.primaryColor
                 }
@@ -110,6 +111,47 @@ Page {
                         } else {
                             csvExporter.stopRecording();
                         }
+                    }
+                }
+
+                Row {
+                    id: blitzerRow
+                    width: parent.width
+                    height: blitzerSwitch.height
+                    TextSwitch {
+                        id: blitzerSwitch
+                        text: qsTr("Blitzer")
+                        width: parent.width / 2
+                        onCheckedChanged: {
+                            if (checked) {
+                                variaConnectivity.enableBlitzer();
+                            } else {
+                                variaConnectivity.disableBlitzer();
+                            }
+                        }
+                    }
+                    Slider {
+                        id: blitzerThreshold
+                        value: 33
+                        minimumValue: 15
+                        maximumValue: 105
+                        leftMargin: 0
+                        rightMargin: Theme.paddingLarge
+                        enabled: blitzerSwitch.checked
+                        label: Math.round(value) + " km/h"
+                        width: parent.width / 2
+                        onValueChanged: {
+                            variaConnectivity.setBlitzerThreshold(Math.round(value));
+                        }
+                    }
+                }
+
+                Button {
+                    id: blitzButton
+                    text: "Blitz!"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    onPressed: {
+                        variaConnectivity.fireBlitzer();
                     }
                 }
 

@@ -54,4 +54,6 @@ void Speedometer::handleGeoPositionUpdated(const QGeoPositionInfo &info)
     } else {
         emit newSpeed(0);
     }
+    QGeoCoordinate coordinate = info.coordinate();
+    emit newPosition(coordinate.latitude(), coordinate.longitude(), horizontalAccuracy);
 }

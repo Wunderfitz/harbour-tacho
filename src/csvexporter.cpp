@@ -30,6 +30,7 @@ CSVExporter::CSVExporter(Speedometer *speedometer, VariaConnectivity *variaConne
     this->speedometer = speedometer;
 
     connect(this->speedometer, SIGNAL(newSpeed(qreal)), this, SLOT(handleNewSpeed(qreal)));
+    connect(this->speedometer, SIGNAL(newPosition(double, double, qreal)), this, SLOT(handleNewPosition(double, double, qreal)));
     connect(this->variaConnectivity, SIGNAL(threatsDetected(QVariantList)), this, SLOT(handleThreats(QVariantList)));
 }
 
@@ -43,7 +44,7 @@ void CSVExporter::startRecording()
         if (this->csvFile->open(QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream fileOut(this->csvFile);
             fileOut.setCodec("UTF-8");
-            fileOut << QString("Threat ID;First Seen;Last Seen;Last Vehicle Speed;Last Vehicle Distance;My Speed;").toUtf8() << "\n";
+            fileOut << QString("Threat ID;First Seen;Last Seen;Last Vehicle Relative Speed (km/h);Last Vehicle Distance (m);My Speed (km/h);Latitude;Longitude;Accuracy (m)").toUtf8() << "\n";
             fileOut.flush();
             this->recording = true;
         }
@@ -61,6 +62,14 @@ void CSVExporter::handleNewSpeed(qreal speed)
 {
     qDebug() << "CSV Exporter - New speed: " << speed;
     this->currentSpeed = speed;
+}
+
+void CSVExporter::handleNewPosition(double latitude, double longitude, qreal accuracy)
+{
+    qDebug() << "CSV Exporter - New position: " << latitude << longitude << accuracy;
+    this->latitude = latitude;
+    this->longitude = longitude;
+    this->accuracy = accuracy;
 }
 
 void CSVExporter::handleThreats(const QVariantList &threats)
@@ -84,6 +93,9 @@ void CSVExporter::handleThreats(const QVariantList &threats)
         recordedThreat.insert("vehicleSpeed", threat.value("speed").toInt());
         recordedThreat.insert("vehicleDistance", threat.value("distance").toInt());
         recordedThreat.insert("mySpeed", this->currentSpeed);
+        recordedThreat.insert("latitude", this->latitude);
+        recordedThreat.insert("longitude", this->longitude);
+        recordedThreat.insert("accuracy", this->accuracy);
         this->recordedThreats.insert(threatNumber, recordedThreat);
         currentThreats.append(threatNumber);
     }
@@ -102,6 +114,9 @@ void CSVExporter::handleThreats(const QVariantList &threats)
                 fileOut << goneThreat.value("vehicleSpeed").toString() << ";";
                 fileOut << goneThreat.value("vehicleDistance").toString() << ";";
                 fileOut << goneThreat.value("mySpeed").toString() << ";";
+                fileOut << goneThreat.value("latitude").toString() << ";";
+                fileOut << goneThreat.value("longitude").toString() << ";";
+                fileOut << goneThreat.value("accuracy").toString() << ";";
                 fileOut << "\n";
                 fileOut.flush();
                 this->recordedThreats.remove(lastThreat);

@@ -31,6 +31,7 @@ public:
 
 signals:
     void newSpeed(qreal speed);
+    void newPosition(double latitude, double longitude, qreal accuracy);
 
 private slots:
     void handleGeoPositionUpdated(const QGeoPositionInfo &info);

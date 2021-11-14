@@ -41,6 +41,7 @@ signals:
 
 private slots:
     void handleNewSpeed(qreal speed);
+    void handleNewPosition(double latitude, double longitude, qreal accuracy);
     void handleThreats(const QVariantList &threats);
 
 private:
@@ -49,6 +50,9 @@ private:
     QList<quint8> lastThreats;
     QMap<quint8, QVariantMap> recordedThreats;
     qreal currentSpeed;
+    double latitude;
+    double longitude;
+    qreal accuracy;
     QFile *csvFile;
     QMutex threatMutex;
     bool recording = false;

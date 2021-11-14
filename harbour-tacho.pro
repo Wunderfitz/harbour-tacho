@@ -30,6 +30,9 @@ gui.path = /usr/share/$${TARGET}
 images.files = images
 images.path = /usr/share/$${TARGET}
 
+sound.files = sound
+sound.path = /usr/share/$${TARGET}
+
 ICONPATH = /usr/share/icons/hicolor
 
 86.png.path = $${ICONPATH}/86x86/apps/
@@ -51,7 +54,7 @@ tacho.desktop.path = /usr/share/applications/
 tacho.desktop.files = harbour-tacho.desktop
 
 INSTALLS += 86.png 108.png 128.png 172.png 256.png \
-            tacho.desktop gui images
+            tacho.desktop gui images sound
 
 HEADERS += \
     src/csvexporter.h \

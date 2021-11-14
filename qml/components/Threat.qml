@@ -24,7 +24,7 @@ Row {
     spacing: Theme.paddingMedium
 
     property var threatData
-    property bool dangerous: threatData.speed > 70
+    property bool dangerous: threatData.speed > blitzerThreshold.value
 
     Rectangle {
         id: lineLeft

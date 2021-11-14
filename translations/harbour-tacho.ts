@@ -96,5 +96,9 @@
         <source>Stored in your Documents folder (prefix: &apos;tacho&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Blitzer</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

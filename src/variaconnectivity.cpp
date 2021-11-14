@@ -53,8 +53,11 @@ VariaConnectivity::VariaConnectivity(QObject *parent) : QObject(parent)
     connect(alertsCleanupTimer, &QTimer::timeout, this, &VariaConnectivity::timeoutAlertsCleanupTimer);
 
     this->mediaPlayer = new QMediaPlayer();
-    this->mediaPlayer->setMedia(QUrl::fromLocalFile("/usr/share/sounds/jolla-ringtones/stereo/poppy-red-tone-1.ogg"));
-    this->mediaPlayer->setVolume(50);
+    this->mediaPlayer->setMedia(QUrl::fromLocalFile("/usr/share/harbour-tacho/sound/shutter.wav"));
+    this->mediaPlayer->setVolume(100);
+
+    this->blitzerEnabled = false;
+    this->blitzerThreshold = 33;
 }
 
 VariaConnectivity::~VariaConnectivity()
@@ -83,6 +86,29 @@ void VariaConnectivity::enableScreensaver()
 {
     qDebug() << "Enabling screensaver";
     this->mceInterface->call("req_display_cancel_blanking_pause");
+}
+
+void VariaConnectivity::enableBlitzer()
+{
+    qDebug() << "Enabling blitzer";
+    this->blitzerEnabled = true;
+}
+
+void VariaConnectivity::disableBlitzer()
+{
+    qDebug() << "Disabling blitzer";
+    this->blitzerEnabled = false;
+}
+
+void VariaConnectivity::setBlitzerThreshold(int blitzerThreshold)
+{
+    qDebug() << "Setting blitzer threshold" << blitzerThreshold;
+    this->blitzerThreshold = blitzerThreshold;
+}
+
+void VariaConnectivity::fireBlitzer()
+{
+    this->mediaPlayer->play();
 }
 
 void VariaConnectivity::onDevicePropertiesChanged(const QString &interface, const QVariantMap &map, const QStringList &list)
@@ -142,8 +168,13 @@ void VariaConnectivity::onCharacteristicPropertiesChanged(const QString &interfa
             currentThreat.insert("distance", threatDistance);
             currentThreat.insert("speed", threatSpeed);
             currentThreats.append(currentThreat);
-            if (threatSpeed > 70 && !this->sentAlerts.contains(threatNumber)) {
-                qDebug() << "Uh, fast! Sending alert...";
+            int estimatedBlitzerDistance = 10 + ( threatSpeed / 3.6 );
+            qDebug() << "Estimated blitzer distance: " << estimatedBlitzerDistance;
+            if (this->blitzerEnabled
+                    && this->blitzerThreshold < threatSpeed
+                    && threatDistance < estimatedBlitzerDistance
+                    && !this->sentAlerts.contains(threatNumber)) {
+                qDebug() << "Uh, fast! Invoking blitzer...";
                 this->sentAlerts.append(threatNumber);
                 this->mediaPlayer->play();
             }
